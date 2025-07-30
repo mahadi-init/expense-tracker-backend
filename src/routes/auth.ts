@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { StatusCodes } from "http-status-codes";
+import { userZod } from "../types/user-zod";
+import { validateData } from "../utils/zod-validator";
 
 const auth = Router();
 
-auth.get("/hello", async (req, res, next) => {
-  res.status(StatusCodes.OK).json({ message: "nice" });
+auth.post("/signup", validateData(userZod), async (req, res, next) => {
+  const { username, password, email } = req.body;
 });
 
 export default auth;
