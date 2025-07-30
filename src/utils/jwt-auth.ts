@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import secrets from "../config/secret";
+import secrets from "../lib/secret";
 import { getBearerToken } from "./token";
 
 export async function jwtAuthorization(

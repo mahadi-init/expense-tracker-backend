@@ -8,23 +8,18 @@
     "start": "tsc"
   },
   "dependencies": {
-    "@types/nodemailer": "^6.4.15",
-    "@types/socket.io": "^3.0.2",
-    "@types/ws": "^8.5.10",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dayjs": "^1.11.11",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.3.3",
     "morgan": "^1.10.0",
-    "nodemailer": "^6.9.13",
-    "redis": "^5.0.1",
-    "socket.io": "^4.7.5",
     "url": "^0.11.3",
     "validator": "^13.11.0",
-    "ws": "^8.17.0"
+    "zod": "^4.0.13"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.7",

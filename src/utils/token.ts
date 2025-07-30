@@ -1,6 +1,6 @@
 import { Request } from "express";
 import jwt from "jsonwebtoken";
-import secrets from "../config/secret";
+import secrets from "../lib/secret";
 
 interface User {
   id: string;

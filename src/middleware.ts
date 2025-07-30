@@ -3,7 +3,7 @@ import cors from "cors";
 import express from "express";
 import mongoose from "mongoose";
 import morgan from "morgan";
-import connectDB from "../config/db";
+import connectDB from "./lib/db";
 
 const app = express();
 

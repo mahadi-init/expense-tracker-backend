@@ -1,19 +1,19 @@
 import "dotenv/config";
 import express from "express";
-import http from "http"; // Import the http module
-import connectDB from "./config/db";
-import secrets from "./config/secret";
-import middleware from "./shared/middleware";
-import routes from "./shared/routes";
+import connectDB from "./lib/db";
+import secrets from "./lib/secret";
+import middleware from "./middleware";
+import routes from "./routes";
+import { Request, Response, NextFunction } from "express";
+import { AppError } from "./types/app-error";
 
 const app = express();
-const server = http.createServer(app);
 
 // port
 const PORT = secrets.port;
 
 // root route
-app.get("/api/v1", (_, res, next) => {
+app.get("/", (_, res, next) => {
   res.json({
     success: true,
     message: "Welcome To The API",
@@ -29,10 +29,25 @@ connectDB();
 app.use(middleware);
 
 // define routes
-app.use("/api/v1", routes);
+app.use("/api", routes);
+
+// Global Error Handler Middleware
+app.use((err: Error, _: Request, res: Response, __: NextFunction) => {
+  console.error("ERROR 💥", err);
+
+  // Determine status code
+  const statusCode = err instanceof AppError ? err.statusCode : 500;
+  const message = err.message || "Internal Server Error";
+
+  res.status(statusCode).json({
+    success: false,
+    message: message,
+    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+  });
+});
 
 // listen to port
-server.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
 
