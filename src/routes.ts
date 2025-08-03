@@ -1,9 +1,11 @@
 import { Router } from "express";
 import auth from "./routes/auth";
+import user from "./routes/user";
 
 const router = Router();
 
 router.use("/auth", auth);
+router.use("/user", user);
 
 // Handle not found
 router.use((req, res, next) => {

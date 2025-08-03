@@ -6,6 +6,9 @@ import middleware from "./middleware";
 import routes from "./routes";
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "./types/app-error";
+import { ZodError } from "zod";
+import { StatusCodes } from "http-status-codes";
+import { formatErrorMessage } from "./utils/formatted-errors";
 
 const app = express();
 
@@ -33,7 +36,13 @@ app.use("/api", routes);
 
 // Global Error Handler Middleware
 app.use((err: Error, _: Request, res: Response, __: NextFunction) => {
-  console.error("ERROR 💥", err);
+  // zod error catch
+  if (err instanceof ZodError) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      success: false,
+      message: formatErrorMessage(err.message),
+    });
+  }
 
   // Determine status code
   const statusCode = err instanceof AppError ? err.statusCode : 500;
