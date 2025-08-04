@@ -4,6 +4,9 @@ import { validateData } from "../utils/zod-validator";
 import bcrypt from "bcrypt";
 import { User } from "../models/user";
 import { StatusCodes } from "http-status-codes";
+import { AppError } from "../types/app-error";
+import { generateJwtToken } from "../utils/jwt";
+import { authenticate } from "../middlewares/authenticate";
 
 const auth = Router();
 const saltRounds = 10;
@@ -35,10 +38,9 @@ auth.post(
     try {
       const { email, password } = req.body;
       const user = await User.findOne({ email: email });
-      console.log("user", user);
 
       if (!user) {
-        throw new Error("User not found");
+        throw new AppError("User not found", StatusCodes.NO_CONTENT);
       }
 
       const isPasswordValid = bcrypt.compareSync(
@@ -50,14 +52,33 @@ auth.post(
         res.status(StatusCodes.CREATED).json({
           success: true,
           data: user,
+          token: generateJwtToken({
+            id: user.id,
+            username: user.username,
+            email: user.email,
+          }),
         });
       } else {
-        throw new Error("Invalid email or password");
+        throw new AppError("Invalid email or password", StatusCodes.NO_CONTENT);
       }
     } catch (err: any) {
       next(err);
     }
   },
 );
+
+auth.get("/current-user", authenticate, async (req, res, next) => {
+  try {
+    const userID = req.userID;
+
+    const user = await User.findById(userID);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: user,
+    });
+  } catch (err: any) {
+    next(err);
+  }
+});
 
 export default auth;
