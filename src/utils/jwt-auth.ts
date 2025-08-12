@@ -19,6 +19,9 @@ export async function jwtAuthorization(
       if (!data) {
         throw new AppError("Invalid JWT", StatusCodes.UNAUTHORIZED);
       }
+
+      req.userId = "";
+      req.email = "";
     } else {
       throw new AppError("Jwt Not found", StatusCodes.UNAUTHORIZED);
     }

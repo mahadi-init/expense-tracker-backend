@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { StatusCodes } from "http-status-codes";
 import { User } from "../models/user";
+import { jwtAuthorization } from "../utils/jwt-auth";
 
 const user = Router();
 

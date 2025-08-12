@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 import { User } from "../models/user";
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../types/app-error";
-import { STATUS_CODES } from "http";
+import { jwtAuthorization } from "../utils/jwt-auth";
 
 const auth = Router();
 const saltRounds = 10;
@@ -43,7 +43,6 @@ auth.post(
     try {
       const { email, password } = req.body;
       const user = await User.findOne({ email: email });
-      console.log("user", user);
 
       if (!user) {
         throw new AppError("User not found", StatusCodes.NO_CONTENT);
@@ -67,5 +66,18 @@ auth.post(
     }
   },
 );
+
+auth.get("/current-user", jwtAuthorization, async (req, res, next) => {
+  try {
+    const user = await User.findById(1);
+
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: user,
+    });
+  } catch (err: any) {
+    next(err);
+  }
+});
 
 export default auth;
