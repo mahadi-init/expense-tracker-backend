@@ -4,6 +4,7 @@ import { validateData } from "../utils/zod-validator";
 import bcrypt from "bcrypt";
 import { User } from "../models/user";
 import { StatusCodes } from "http-status-codes";
+import { AppError } from "../types/app-error";
 
 const auth = Router();
 const saltRounds = 10;
@@ -12,9 +13,14 @@ auth.post("/signup", validateData(userZod), async (req, res, next) => {
   try {
     const { username, password, email } = req.body;
 
+    const ifUserExist = await User.findOne({ email: email });
+    if (ifUserExist) {
+      throw new AppError("Email already exists", StatusCodes.CONFLICT);
+    }
+
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    await User.create({
+    const user = await User.create({
       username: username,
       password: hashedPassword,
       email: email,
@@ -22,6 +28,7 @@ auth.post("/signup", validateData(userZod), async (req, res, next) => {
 
     res.status(StatusCodes.CREATED).json({
       success: true,
+      data: user,
     });
   } catch (err: any) {
     next(err);
