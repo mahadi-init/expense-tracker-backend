@@ -12,4 +12,4 @@ const schema = new mongoose.Schema(
   },
 );
 
-export const Expense = mongoose.model("Expense", schema);
+export const Expenses = mongoose.model("Expenses", schema);

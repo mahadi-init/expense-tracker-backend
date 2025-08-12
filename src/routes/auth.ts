@@ -15,9 +15,14 @@ auth.post("/signup", validateData(userZod), async (req, res, next) => {
   try {
     const { username, password, email } = req.body;
 
+    const ifUserExist = await User.findOne({ email: email });
+    if (ifUserExist) {
+      throw new AppError("Email already exists", StatusCodes.CONFLICT);
+    }
+
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    await User.create({
+    const user = await User.create({
       username: username,
       password: hashedPassword,
       email: email,
@@ -25,6 +30,7 @@ auth.post("/signup", validateData(userZod), async (req, res, next) => {
 
     res.status(StatusCodes.CREATED).json({
       success: true,
+      data: user,
     });
   } catch (err: any) {
     next(err);
@@ -49,7 +55,7 @@ auth.post(
       );
 
       if (isPasswordValid) {
-        res.status(StatusCodes.CREATED).json({
+        res.status(StatusCodes.OK).json({
           success: true,
           data: user,
           token: generateJwtToken({
