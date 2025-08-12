@@ -1,6 +1,8 @@
 import { Request } from "express";
 import jwt from "jsonwebtoken";
 import secrets from "../lib/secret";
+import { AppError } from "../types/app-error";
+import { StatusCodes } from "http-status-codes";
 
 interface User {
   id: string;
@@ -14,7 +16,7 @@ export const generateToken = (user: User) => {
   };
 
   if (!secrets.jwt_secret) {
-    throw new Error("JWT token not found!!");
+    throw new AppError("JWT token not found!!", StatusCodes.UNAUTHORIZED);
   }
 
   const token = jwt.sign(payload, secrets.jwt_secret, { expiresIn: "7d" });
@@ -29,9 +31,9 @@ export const getBearerToken = async (req: Request) => {
       const bearerToken = bearer[1];
       return bearerToken;
     } else {
-      return null
+      return null;
     }
   } catch (err) {
-    return null
+    return null;
   }
 };
