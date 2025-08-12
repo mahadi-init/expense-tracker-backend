@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import secrets from "../lib/secret";
 import { getBearerToken } from "./token";
+import { StatusCodes } from "http-status-codes";
+import { AppError } from "../types/app-error";
 
 export async function jwtAuthorization(
   req: Request,
@@ -15,18 +17,17 @@ export async function jwtAuthorization(
       const data = jwt.verify(bearerToken, secrets.jwt_secret);
 
       if (!data) {
-        throw new Error();
+        throw new AppError("Invalid JWT", StatusCodes.UNAUTHORIZED);
       }
     } else {
-      throw new Error();
+      throw new AppError("Jwt Not found", StatusCodes.UNAUTHORIZED);
     }
 
     next();
   } catch (error: any) {
-    res.status(401).json({
+    res.status(StatusCodes.UNAUTHORIZED).json({
       success: false,
       message: "Unauthorized access",
     });
   }
 }
-

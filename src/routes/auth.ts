@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import { User } from "../models/user";
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../types/app-error";
+import { STATUS_CODES } from "http";
 
 const auth = Router();
 const saltRounds = 10;
@@ -45,7 +46,7 @@ auth.post(
       console.log("user", user);
 
       if (!user) {
-        throw new Error("User not found");
+        throw new AppError("User not found", StatusCodes.NO_CONTENT);
       }
 
       const isPasswordValid = bcrypt.compareSync(
@@ -54,12 +55,12 @@ auth.post(
       );
 
       if (isPasswordValid) {
-        res.status(StatusCodes.CREATED).json({
+        res.status(StatusCodes.OK).json({
           success: true,
           data: user,
         });
       } else {
-        throw new Error("Invalid email or password");
+        throw new AppError("Invalid email or password", StatusCodes.NO_CONTENT);
       }
     } catch (err: any) {
       next(err);

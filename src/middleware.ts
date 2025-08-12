@@ -4,6 +4,8 @@ import express from "express";
 import mongoose from "mongoose";
 import morgan from "morgan";
 import connectDB from "./lib/db";
+import { AppError } from "./types/app-error";
+import { StatusCodes } from "http-status-codes";
 
 const app = express();
 
@@ -34,7 +36,10 @@ app.use((_, res, next) => {
     switch (mongoStatus) {
       case 0:
         connectDB();
-        throw new Error("database connection failed. Reconnecting...");
+        throw new AppError(
+          "database connection failed. Reconnecting...",
+          StatusCodes.GATEWAY_TIMEOUT,
+        );
       default:
         next();
     }
