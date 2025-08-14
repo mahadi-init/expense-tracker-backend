@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { userZod } from "../types/user-zod";
-import { validateData } from "../utils/zod-validator";
+import { validate } from "../utils/zod-validator";
 import bcrypt from "bcrypt";
 import { User } from "../models/user";
 import { StatusCodes } from "http-status-codes";
@@ -11,7 +11,7 @@ import { authenticate } from "../middlewares/authenticate";
 const auth = Router();
 const saltRounds = 10;
 
-auth.post("/signup", validateData(userZod), async (req, res, next) => {
+auth.post("/signup", validate(userZod), async (req, res, next) => {
   try {
     const { username, password, email } = req.body;
 
@@ -39,7 +39,7 @@ auth.post("/signup", validateData(userZod), async (req, res, next) => {
 
 auth.post(
   "/signin",
-  validateData(userZod.pick({ email: true, password: true })),
+  validate(userZod.pick({ email: true, password: true })),
   async (req, res, next) => {
     try {
       const { email, password } = req.body;
